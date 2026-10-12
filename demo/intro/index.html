@@ -1,0 +1,748 @@
+<!doctype html>
+<!--
+  Phision intro: pharma + vision swirl into the Phision mark, set to a
+  synthesized 120 bpm track. Open this file in a browser; it plays silently.
+  Keyboard only, nothing on screen:
+    S  sound on/off (turning it on plays from the top with music)
+    R  replay (keeps the current sound setting)
+  In the app it runs in a full-screen frame (frontend/src/components/Intro.tsx):
+  it holds on the logo, and any other key or a click then tells the parent
+  page to open the landing page.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Phision Logo Reveal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Urbanist:wght@500;700&display=swap">
+<style>
+  /* One look only: deep purple night, whatever the viewer's system theme. */
+  :root {
+    color-scheme: dark;
+    --bg: #0c0b16;
+    --bg-glow: #181530;
+    --ink: #ecebf5;
+    --accent: #8e7dff;
+    --muted: #9a97b0;
+  }
+
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    box-sizing: border-box;
+    padding-inline: 16px;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg);
+    background-image: radial-gradient(ellipse 70% 60% at 50% 46%, var(--bg-glow), var(--bg) 72%);
+    color: var(--ink);
+    font-family: "Urbanist", "Segoe UI", system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  .stage { flex: 1 1 auto; min-height: 0; display: flex; }
+  #logo { width: 100%; height: 100%; display: block; }
+
+  #letters { fill: none; stroke: var(--ink); stroke-width: 16; stroke-linecap: round; stroke-linejoin: round; }
+  #letters .dot { fill: var(--ink); stroke: none; }
+  #plus { fill: none; stroke: var(--muted); stroke-width: 12; stroke-linecap: round; }
+  .ring-ink { fill: none; stroke: var(--ink); stroke-width: 16; }
+  .ring-accent { fill: none; stroke: var(--accent); stroke-width: 16; }
+  #mark path { fill: var(--accent); }
+  #wordmark { fill: var(--ink); font-family: "Urbanist", "Segoe UI", system-ui, sans-serif; font-weight: 700; }
+  #tagline { fill: var(--muted); font-family: "Urbanist", "Segoe UI", system-ui, sans-serif; font-weight: 500; }
+
+  #enter {
+    position: fixed; left: 0; right: 0; bottom: max(32px, env(safe-area-inset-bottom));
+    text-align: center; font-size: 13px; font-weight: 500; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+    opacity: 0; transition: opacity 0.8s ease; pointer-events: none;
+  }
+  body.ended #enter { opacity: 1; animation: breathe 2.4s ease-in-out 0.8s infinite; }
+  body.ended { cursor: pointer; }
+  @keyframes breathe { 50% { opacity: 0.45; } }
+</style>
+</head>
+<body>
+
+<main class="stage">
+  <svg id="logo" viewBox="-800 -450 1600 900" preserveAspectRatio="xMidYMid meet" role="img"
+       aria-label="Phision logo: the p of pharma and the o of vision swirl together into the Phision aperture mark. Phision, find the deviation.">
+    <defs>
+      <!-- Soft left-to-right wipe for the wordmark. -->
+      <linearGradient id="wipeGrad" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#fff"/>
+        <stop offset="1" stop-color="#000"/>
+      </linearGradient>
+      <mask id="wipeMask" maskUnits="userSpaceOnUse" x="-3000" y="-3000" width="6000" height="6000">
+        <rect x="-3000" y="-3000" width="6000" height="6000" fill="url(#wipeGrad)"/>
+      </mask>
+    </defs>
+
+    <!-- Monoline letters. Local coords: baseline y=0, x-height 100, ascender 150, stroke 16. -->
+    <g id="letters">
+      <g id="ph-p"><path d="M8 -92 V42"/></g>
+      <g id="ph-h"><path d="M8 -142 V-8 M8 -58 A34 34 0 0 1 76 -58 V-8"/></g>
+      <g id="ph-a1"><circle cx="50" cy="-50" r="42"/><path d="M92 -92 V-8"/></g>
+      <g id="ph-r"><path d="M8 -92 V-8 M8 -52 C8 -76 24 -92 48 -92"/></g>
+      <g id="ph-m"><path d="M8 -92 V-8 M8 -66 A26 26 0 0 1 60 -66 V-8 M60 -66 A26 26 0 0 1 112 -66 V-8"/></g>
+      <g id="ph-a2"><circle cx="50" cy="-50" r="42"/><path d="M92 -92 V-8"/></g>
+
+      <g id="vi-v"><path d="M8 -92 L42 -8 L76 -92"/></g>
+      <g id="vi-i1"><path d="M8 -92 V-8"/><circle class="dot" cx="8" cy="-128" r="10"/></g>
+      <g id="vi-s"><path d="M53.7 -83.5 A24 20 0 1 0 34 -52 A26 22 0 1 1 12.7 -17.4"/></g>
+      <g id="vi-i2"><path d="M8 -92 V-8"/><circle class="dot" cx="8" cy="-128" r="10"/></g>
+      <g id="vi-n"><path d="M8 -92 V-8 M8 -58 A34 34 0 0 1 76 -58 V-8"/></g>
+    </g>
+
+    <g id="plus"><path d="M-18 0 H18 M0 -18 V18"/></g>
+
+    <!-- The two circles: p's bowl and vision's o. Local coords centred on the ring. -->
+    <g id="ringP"><circle class="ring-ink" r="42"/><circle class="ring-accent" r="42" opacity="0"/></g>
+    <g id="ringO"><circle class="ring-ink" r="42"/><circle class="ring-accent" r="42" opacity="0"/></g>
+
+    <!-- The Phision mark: three aperture segments, each curling inward toward its end. -->
+    <g id="mark" opacity="0"><path/><path/><path/></g>
+
+    <text id="wordmark" x="0" y="0" opacity="0" mask="url(#wipeMask)">Phision</text>
+    <text id="tagline" x="0" y="0" text-anchor="middle" opacity="0">find the deviation</text>
+  </svg>
+</main>
+<div id="enter">Press any key to enter</div>
+
+<script>
+  const svg = document.getElementById('logo');
+  const $ = (id) => document.getElementById(id);
+
+  // ---- easing -------------------------------------------------------------
+  const clamp01 = (x) => (x < 0 ? 0 : x > 1 ? 1 : x);
+  const P = (t, a, b) => clamp01((t - a) / (b - a));
+  const lerp = (a, b, p) => a + (b - a) * p;
+  const bump = (p) => Math.sin(Math.PI * p);
+  const E = {
+    out: (t) => 1 - Math.pow(1 - t, 3),
+    in: (t) => t * t * t,
+    inOut: (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
+    back: (t) => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); },
+  };
+
+  // ---- the mark -------------------------------------------------------------
+  // Mark units: outer radius 100 where a segment starts. Each segment spans 120°
+  // clockwise and shrinks toward its end; the three cuts are straight slots set
+  // just counter-clockwise of the radial line.
+  const MARK = { ro: 100, ri: 53, slotW: 12, slotC: -12, shrink: 0.26 };
+  const RAD = Math.PI / 180;
+
+  function markPaths(cx, cy, p) {
+    // p: ro, ri (radii at segment start), w (slot width), c (slot offset), s (shrink), rot (deg)
+    const N = 40, out = [];
+    for (let k = 0; k < 3; k++) {
+      const a0 = -90 + 120 * k + p.rot, a1 = a0 + 120;
+      const f = (a) => 1 - p.s * Math.pow(clamp01((a - a0) / 120), 1.3);
+      const cut = (base, h, R) => {
+        let a = base;
+        for (let i = 0; i < 6; i++) {
+          const q = Math.max(-0.95, Math.min(0.95, h / (R * f(a))));
+          a = base + Math.asin(q) / RAD;
+        }
+        return a;
+      };
+      const hs = p.c + p.w / 2, he = p.c - p.w / 2;
+      const oS = cut(a0, hs, p.ro), oE = cut(a1, he, p.ro);
+      const iS = cut(a0, hs, p.ri), iE = cut(a1, he, p.ri);
+      let d = '';
+      for (let i = 0; i <= N; i++) {
+        const a = lerp(oS, oE, i / N), r = p.ro * f(a);
+        d += (i ? 'L' : 'M') + (cx + r * Math.cos(a * RAD)).toFixed(2) + ' ' + (cy + r * Math.sin(a * RAD)).toFixed(2);
+      }
+      for (let i = N; i >= 0; i--) {
+        const a = lerp(iS, iE, i / N), r = p.ri * f(a);
+        d += 'L' + (cx + r * Math.cos(a * RAD)).toFixed(2) + ' ' + (cy + r * Math.sin(a * RAD)).toFixed(2);
+      }
+      out.push(d + 'Z');
+    }
+    return out;
+  }
+
+  // Horizontal extent of the finished mark, in mark units (for the lockup).
+  const MARK_X = (() => {
+    let lo = 0, hi = 0;
+    for (const d of markPaths(0, 0, { ro: MARK.ro, ri: MARK.ri, w: MARK.slotW, c: MARK.slotC, s: MARK.shrink, rot: 0 })) {
+      for (const m of d.matchAll(/[ML](-?[\d.]+) /g)) { const x = +m[1]; lo = Math.min(lo, x); hi = Math.max(hi, x); }
+    }
+    return { lo, hi };
+  })();
+
+  // ---- letters ------------------------------------------------------------
+  const LETTERS = [
+    { id: 'ph-p',  word: 'pharma', idx: 0, dx: 0 },
+    { id: 'ph-h',  word: 'pharma', idx: 1, dx: 122 },
+    { id: 'ph-a1', word: 'pharma', idx: 2, dx: 228 },
+    { id: 'ph-r',  word: 'pharma', idx: 3, dx: 350 },
+    { id: 'ph-m',  word: 'pharma', idx: 4, dx: 428 },
+    { id: 'ph-a2', word: 'pharma', idx: 5, dx: 570 },
+    { id: 'vi-v',  word: 'vision', idx: 0, dx: 0 },
+    { id: 'vi-i1', word: 'vision', idx: 1, dx: 106 },
+    { id: 'vi-s',  word: 'vision', idx: 2, dx: 144 },
+    { id: 'vi-i2', word: 'vision', idx: 3, dx: 234 },
+    { id: 'vi-n',  word: 'vision', idx: 5, dx: 394 },
+  ].map((l) => ({ ...l, el: $(l.id) }));
+
+  const RINGS = ['ringP', 'ringO'].map((id) => {
+    const g = $(id);
+    return { g, accent: g.querySelector('.ring-accent') };
+  });
+
+  const plus = $('plus');
+  const mark = $('mark'), markSegs = [...mark.querySelectorAll('path')];
+  const wordmark = $('wordmark'), wipeGrad = $('wipeGrad'), tagline = $('tagline');
+
+  // Timeline on a 120 bpm grid (one beat = 0.5 s) so the score can hit it:
+  // words on the pickup, plus on the first downbeat, circles on beat 2,
+  // swirl over the build, merge on the drop, mark locks on beat 3, tagline on
+  // the final downbeat.
+  const ENTER = { pharma: 0.0, vision: 0.5 };
+  const T_MERGE = 3.0;  // the two circles coincide and hand over to the mark
+  const T_FORM = 4.0;   // the mark locks into shape
+  const T_TAG = 5.0;
+  const T_END = 6.0;
+
+  // Urbanist Bold metrics per 1px of font-size (measured; refreshed once the font loads).
+  let FONT = { cap: 0.70, inkLeft: 0.05, inkWidth: 3.019 };
+  function measureFont() {
+    try {
+      const c = document.createElement('canvas').getContext('2d');
+      c.font = '700 100px "Urbanist"';
+      const m = c.measureText('Phision');
+      const cap = c.measureText('P').actualBoundingBoxAscent / 100;
+      if (cap > 0.5 && cap < 0.9) {
+        FONT = { cap, inkLeft: -m.actualBoundingBoxLeft / 100, inkWidth: (m.actualBoundingBoxRight + m.actualBoundingBoxLeft) / 100 };
+      }
+    } catch (e) { /* keep the defaults */ }
+  }
+
+  // ---- layout: side by side when wide, stacked when tall ------------------
+  let lay;
+  function computeLayout() {
+    const w = svg.clientWidth || window.innerWidth;
+    const h = svg.clientHeight || window.innerHeight;
+    const wide = w / Math.max(h, 1) >= 1.15;
+    lay = wide
+      ? { vb: '-800 -450 1600 900', maxW: 1220,
+          pharma: { x: -654, y: 90 }, vision: { x: 176, y: 90 }, plus: { x: 96, y: 40 } }
+      : { vb: '-420 -420 840 840', maxW: 770,
+          pharma: { x: -335, y: -150 }, vision: { x: -239, y: 250 }, plus: { x: 0, y: 40 } };
+
+    // Lockup, as in the reference logo: mark, a gap, then the wordmark with its
+    // cap height 1.165x the mark radius, centred on the mark.
+    const perUnit = (MARK_X.hi - MARK_X.lo) + 42 + (1.165 * MARK.ro / FONT.cap) * FONT.inkWidth;
+    const ms = Math.min(1.6, lay.maxW / perUnit);
+    const cap = 1.165 * MARK.ro * ms;
+    const size = cap / FONT.cap;
+    const total = perUnit * ms;
+    const my = -34 * ms;
+    const mx = -total / 2 - MARK_X.lo * ms;
+    const inkL = mx + (MARK_X.hi + 42) * ms;
+    lay.mark = { x: mx, y: my, s: ms };
+    lay.word = { x: inkL - FONT.inkLeft * size, y: my + cap / 2, size, inkL, inkR: inkL + FONT.inkWidth * size, cap };
+    lay.tag = { x: 0, y: my + 90 * ms + 0.75 * cap, size: 0.3 * cap };
+
+    svg.setAttribute('viewBox', lay.vb);
+    wordmark.setAttribute('font-size', size.toFixed(2));
+    wordmark.setAttribute('x', lay.word.x.toFixed(2));
+    wordmark.setAttribute('y', lay.word.y.toFixed(2));
+    tagline.setAttribute('font-size', lay.tag.size.toFixed(2));
+  }
+
+  const tf = (x, y, s = 1, r = 0) =>
+    `translate(${x.toFixed(2)} ${y.toFixed(2)})` + (r ? ` rotate(${r.toFixed(2)})` : '') + ` scale(${s.toFixed(4)})`;
+
+  // ---- one frame of the timeline -----------------------------------------
+  let cur = 0;
+  function render(t) {
+    cur = t;
+    const L = lay;
+
+    // Words come in, then fall away once their circles leave.
+    const exit = P(t, 2.0, 2.6);
+    for (const l of LETTERS) {
+      const w = L[l.word];
+      const dir = l.word === 'pharma' ? -1 : 1;
+      const delay = ENTER[l.word] + l.idx * 0.06;
+      const pin = E.out(P(t, delay, delay + 0.65));
+      const x = w.x + l.dx + dir * 36 * (1 - pin);
+      const y = w.y + 22 * (1 - pin) + 30 * E.in(exit);
+      const op = pin * (1 - E.out(exit));
+      l.el.setAttribute('transform', tf(x, y));
+      l.el.setAttribute('opacity', op.toFixed(3));
+    }
+
+    // The plus pops in on the downbeat, then spins away as the circles leave.
+    const pIn = E.back(P(t, 1.0, 1.4));
+    const pOut = E.in(P(t, 1.9, 2.2));
+    plus.setAttribute('transform', tf(L.plus.x, L.plus.y, Math.max(0, pIn * (1 - pOut)), 90 * pOut));
+    plus.setAttribute('opacity', (Math.min(1, pIn) * (1 - pOut)).toFixed(3));
+
+    // The two circles light up, lift out and swirl clockwise into one ring.
+    const ms = L.mark.s;
+    const handS = 1.5 * ms;             // ring scale at hand-off: outer 75, inner 51 mark units
+    const accent = E.inOut(P(t, 1.5, 1.9));
+    const hiPulse = 0.12 * bump(P(t, 1.5, 2.0));
+    const conv = E.inOut(P(t, 2.0, T_MERGE));
+    const merged = t >= T_MERGE;
+
+    RINGS.forEach((r, i) => {
+      const isP = i === 0;
+      const w = isP ? L.pharma : L.vision;
+      const delay = isP ? ENTER.pharma : ENTER.vision + 4 * 0.06;
+      const pin = E.out(P(t, delay, delay + 0.65));
+      const sx = w.x + (isP ? 50 : 322) + (isP ? -1 : 1) * 36 * (1 - pin);
+      const sy = w.y - 50 + 22 * (1 - pin);
+      // Clockwise tangent to the line from the meeting point, for the swirl.
+      const rx = sx, ry = sy - L.mark.y, len = Math.hypot(rx, ry) || 1;
+      const swirl = 0.28 * len * bump(conv);
+      const x = lerp(sx, 0, conv) + (-ry / len) * swirl;
+      const y = lerp(sy, L.mark.y, conv) + (rx / len) * swirl;
+      const s = lerp(1, handS, conv) * (1 + hiPulse);
+      r.g.setAttribute('transform', tf(x, y, s));
+      r.g.setAttribute('opacity', merged ? '0' : pin.toFixed(3));
+      r.accent.setAttribute('opacity', accent.toFixed(3));
+    });
+
+    // The ring thickens, twists and opens into the three aperture segments,
+    // then slides left to make room for the wordmark.
+    if (merged) {
+      const m = P(t, T_MERGE, T_FORM);
+      const thick = E.out(m);
+      const open = E.inOut(P(t, T_MERGE + 0.1, T_FORM - 0.05));
+      const rot = lerp(-150, 0, E.out(m));
+      const click = 1 + 0.035 * bump(P(t, T_FORM - 0.15, T_FORM + 0.15));
+      const slide = E.inOut(P(t, T_FORM - 0.05, T_FORM + 0.85));
+      const cx = lerp(0, L.mark.x, slide);
+      const k = ms * click;
+      const paths = markPaths(cx, L.mark.y, {
+        ro: lerp(50 * 1.5, MARK.ro, thick) * k,   // ring outer 50 x hand-off scale 1.5
+        ri: lerp(34 * 1.5, MARK.ri, thick) * k,   // ring inner 34 x 1.5
+        w: lerp(-2, MARK.slotW, open) * k,
+        c: lerp(0, MARK.slotC, open) * k,
+        s: lerp(0, MARK.shrink, open),
+        rot,
+      });
+      paths.forEach((p, i) => markSegs[i].setAttribute('d', p));
+      mark.setAttribute('opacity', '1');
+    } else {
+      mark.setAttribute('opacity', '0');
+    }
+
+    // Wordmark fades in left to right behind the sliding mark.
+    const wipe = E.inOut(P(t, T_FORM + 0.1, T_TAG));
+    const soft = 0.9 * L.word.cap;
+    const edge = lerp(L.word.inkL, L.word.inkR + soft, wipe);
+    wipeGrad.setAttribute('x1', (edge - soft).toFixed(2));
+    wipeGrad.setAttribute('x2', edge.toFixed(2));
+    wordmark.setAttribute('opacity', wipe > 0 ? '1' : '0');
+    if (wipe >= 1) wordmark.removeAttribute('mask');
+    else wordmark.setAttribute('mask', 'url(#wipeMask)');
+
+    // Tagline settles in underneath.
+    const tg = E.out(P(t, T_TAG, T_TAG + 0.8));
+    const ls = lerp(0.42, 0.14, tg) * L.tag.size;
+    tagline.style.letterSpacing = `${ls.toFixed(2)}px`;
+    tagline.setAttribute('x', (L.tag.x + ls / 2).toFixed(2));
+    tagline.setAttribute('y', (L.tag.y + 12 * (1 - tg)).toFixed(2));
+    tagline.setAttribute('opacity', tg.toFixed(3));
+  }
+
+  // ---- sound: a short synthesized score locked to the timeline ------------
+  const mtof = (n) => 440 * Math.pow(2, (n - 69) / 12);
+
+  function impulse(ctx, secs, decay) {
+    const len = Math.floor(ctx.sampleRate * secs);
+    const buf = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) {
+      const d = buf.getChannelData(c);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, decay);
+    }
+    return buf;
+  }
+
+  function createEngine(ctx) {
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -12; comp.knee.value = 10; comp.ratio.value = 3;
+    comp.attack.value = 0.004; comp.release.value = 0.18;
+    const out = ctx.createGain();
+    out.gain.value = 0.7;
+    comp.connect(out); out.connect(ctx.destination);
+
+    const reverb = ctx.createConvolver();
+    reverb.buffer = impulse(ctx, 2.6, 3.2);
+    const revOut = ctx.createGain(); revOut.gain.value = 0.6;
+    reverb.connect(revOut); revOut.connect(comp);
+
+    const delay = ctx.createDelay(1.5);
+    delay.delayTime.value = 0.375;                   // dotted eighth at 120 bpm
+    const fb = ctx.createGain(); fb.gain.value = 0.3;
+    const tone = ctx.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = 3500;
+    delay.connect(tone); tone.connect(fb); fb.connect(delay);
+    const dOut = ctx.createGain(); dOut.gain.value = 0.5;
+    tone.connect(dOut); dOut.connect(comp);
+
+    const noise = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
+    const nd = noise.getChannelData(0);
+    for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+
+    return { ctx, comp, reverb, delay, noise };
+  }
+
+  // One playback's worth of sound; closing it silences anything still scheduled.
+  function openSession(eng) {
+    const { ctx } = eng;
+    const dry = ctx.createGain(), rev = ctx.createGain(), dly = ctx.createGain();
+    dry.connect(eng.comp); rev.connect(eng.reverb); dly.connect(eng.delay);
+    return {
+      eng, ctx, dry, rev, dly,
+      close() {
+        const now = ctx.currentTime;
+        for (const g of [dry, rev, dly]) { g.gain.cancelScheduledValues(now); g.gain.setTargetAtTime(0, now, 0.06); }
+        setTimeout(() => { dry.disconnect(); rev.disconnect(); dly.disconnect(); }, 800);
+      },
+    };
+  }
+
+  function route(S, node, { pan = 0, rev = 0, dly = 0 } = {}) {
+    const { ctx } = S;
+    let n = node;
+    if (pan && ctx.createStereoPanner) { const p = ctx.createStereoPanner(); p.pan.value = pan; n.connect(p); n = p; }
+    n.connect(S.dry);
+    if (rev) { const g = ctx.createGain(); g.gain.value = rev; n.connect(g); g.connect(S.rev); }
+    if (dly) { const g = ctx.createGain(); g.gain.value = dly; n.connect(g); g.connect(S.dly); }
+  }
+
+  function hit(g, t, v, a, d) {
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
+  }
+
+  const I = {
+    noise(S, t, { type = 'bandpass', f = 1000, f2 = 0, q = 0.8, dur = 0.1, v = 0.2, attack = 0.001, pan = 0, rev = 0, dly = 0 }) {
+      const { ctx } = S;
+      const src = ctx.createBufferSource(); src.buffer = S.eng.noise; src.loop = true;
+      const fl = ctx.createBiquadFilter(); fl.type = type; fl.Q.value = q;
+      fl.frequency.setValueAtTime(f, t);
+      if (f2) fl.frequency.exponentialRampToValueAtTime(f2, t + dur);
+      const g = ctx.createGain(); hit(g, t, v, attack, dur);
+      src.connect(fl); fl.connect(g); route(S, g, { pan, rev, dly });
+      src.start(t, Math.random() * 1.5); src.stop(t + attack + dur + 0.05);
+    },
+    kick(S, t, v = 0.9) {
+      const { ctx } = S;
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(150, t);
+      o.frequency.exponentialRampToValueAtTime(46, t + 0.12);
+      hit(g, t, v, 0.004, 0.4);
+      o.connect(g); route(S, g);
+      o.start(t); o.stop(t + 0.45);
+      I.noise(S, t, { type: 'highpass', f: 2500, dur: 0.018, v: 0.16 * v });
+    },
+    hat(S, t, v = 0.1, open = false) {
+      I.noise(S, t, { type: 'highpass', f: 7800, q: 0.5, dur: open ? 0.24 : 0.045, v, pan: 0.2 });
+    },
+    clap(S, t, v = 0.4) {
+      for (let i = 0; i < 3; i++) I.noise(S, t + i * 0.011, { type: 'bandpass', f: 1500, q: 1.1, dur: 0.028, v: v * 0.8 });
+      I.noise(S, t + 0.033, { type: 'bandpass', f: 1300, q: 0.9, dur: 0.2, v, rev: 0.35 });
+    },
+    snare(S, t, v = 0.3, pitch = 1) {
+      const { ctx } = S;
+      I.noise(S, t, { type: 'bandpass', f: 2000 * pitch, q: 0.9, dur: 0.11, v, rev: 0.2 });
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(200 * pitch, t);
+      o.frequency.exponentialRampToValueAtTime(140 * pitch, t + 0.08);
+      hit(g, t, v * 0.7, 0.002, 0.09);
+      o.connect(g); route(S, g); o.start(t); o.stop(t + 0.12);
+    },
+    bass(S, t, n, dur, v = 0.3) {
+      const { ctx } = S;
+      const f = mtof(n);
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f;
+      const sub = ctx.createOscillator(); sub.type = 'sine'; sub.frequency.value = f;
+      const fl = ctx.createBiquadFilter(); fl.type = 'lowpass'; fl.Q.value = 4;
+      fl.frequency.setValueAtTime(1400, t);
+      fl.frequency.exponentialRampToValueAtTime(170, t + Math.min(dur, 0.25));
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(v, t + 0.006);
+      g.gain.setValueAtTime(v, t + dur * 0.6);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      const sg = ctx.createGain(); sg.gain.value = 0.8;
+      o.connect(fl); fl.connect(g); sub.connect(sg); sg.connect(g);
+      route(S, g);
+      o.start(t); sub.start(t); o.stop(t + dur + 0.02); sub.stop(t + dur + 0.02);
+    },
+    pad(S, t, notes, dur, { v = 0.045, attack = 0.4, release = 1.0, cutoff = 1600 } = {}) {
+      const { ctx } = S;
+      const hold = Math.max(attack, dur);
+      for (const side of [-1, 1]) {
+        const fl = ctx.createBiquadFilter(); fl.type = 'lowpass'; fl.Q.value = 0.7;
+        fl.frequency.setValueAtTime(cutoff * 0.6, t);
+        fl.frequency.linearRampToValueAtTime(cutoff, t + hold);
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(v, t + attack);
+        g.gain.setValueAtTime(v, t + hold);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + hold + release);
+        fl.connect(g); route(S, g, { pan: 0.45 * side, rev: 0.5 });
+        for (const n of notes) {
+          const o = ctx.createOscillator(); o.type = 'sawtooth';
+          o.frequency.value = mtof(n); o.detune.value = 8 * side;
+          o.connect(fl); o.start(t); o.stop(t + hold + release + 0.05);
+        }
+      }
+    },
+    pluck(S, t, n, { v = 0.15, pan = 0, dly = 0.3, rev = 0.25, decay = 0.5 } = {}) {
+      const { ctx } = S;
+      const o = ctx.createOscillator(); o.type = 'triangle'; o.frequency.value = mtof(n);
+      const o2 = ctx.createOscillator(); o2.type = 'sine'; o2.frequency.value = mtof(n + 12);
+      const g = ctx.createGain(), g2 = ctx.createGain(); g2.gain.value = 0.35;
+      hit(g, t, v, 0.003, decay);
+      o.connect(g); o2.connect(g2); g2.connect(g);
+      route(S, g, { pan, dly, rev });
+      o.start(t); o2.start(t); o.stop(t + decay + 0.05); o2.stop(t + decay + 0.05);
+    },
+    bell(S, t, n, { v = 0.13, pan = 0, dur = 1.6, dly = 0.3, rev = 0.45 } = {}) {
+      const { ctx } = S;
+      const f = mtof(n);
+      const c = ctx.createOscillator(); c.type = 'sine'; c.frequency.value = f;
+      const m = ctx.createOscillator(); m.type = 'sine'; m.frequency.value = f * 3.5;
+      const mg = ctx.createGain();
+      mg.gain.setValueAtTime(f * 1.6, t);
+      mg.gain.exponentialRampToValueAtTime(f * 0.05, t + dur * 0.6);
+      m.connect(mg); mg.connect(c.frequency);
+      const g = ctx.createGain(); hit(g, t, v, 0.004, dur);
+      c.connect(g); route(S, g, { pan, dly, rev });
+      c.start(t); m.start(t); c.stop(t + dur + 0.05); m.stop(t + dur + 0.05);
+    },
+    riser(S, t0, t1, v = 0.2) {
+      const { ctx } = S;
+      const src = ctx.createBufferSource(); src.buffer = S.eng.noise; src.loop = true;
+      const fl = ctx.createBiquadFilter(); fl.type = 'bandpass'; fl.Q.value = 1.6;
+      fl.frequency.setValueAtTime(300, t0);
+      fl.frequency.exponentialRampToValueAtTime(7000, t1);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(v, t1 - 0.02);
+      g.gain.linearRampToValueAtTime(0.0001, t1);
+      src.connect(fl); fl.connect(g); route(S, g, { rev: 0.3 });
+      src.start(t0); src.stop(t1 + 0.05);
+      const o = ctx.createOscillator(); o.type = 'sawtooth';
+      o.frequency.setValueAtTime(mtof(50), t0);
+      o.frequency.exponentialRampToValueAtTime(mtof(74), t1);
+      const ol = ctx.createBiquadFilter(); ol.type = 'lowpass';
+      ol.frequency.setValueAtTime(500, t0);
+      ol.frequency.exponentialRampToValueAtTime(3000, t1);
+      const og = ctx.createGain();
+      og.gain.setValueAtTime(0.0001, t0);
+      og.gain.exponentialRampToValueAtTime(v * 0.25, t1 - 0.02);
+      og.gain.linearRampToValueAtTime(0.0001, t1);
+      o.connect(ol); ol.connect(og); route(S, og, { rev: 0.2 });
+      o.start(t0); o.stop(t1 + 0.05);
+    },
+    boom(S, t, n = 38, v = 0.6, dur = 1.2) {
+      const { ctx } = S;
+      const o = ctx.createOscillator(); o.type = 'sine';
+      o.frequency.setValueAtTime(mtof(n + 12), t);
+      o.frequency.exponentialRampToValueAtTime(mtof(n), t + 0.25);
+      const g = ctx.createGain(); hit(g, t, v, 0.01, dur);
+      o.connect(g); route(S, g); o.start(t); o.stop(t + dur + 0.05);
+    },
+    crash(S, t, v = 0.14, dur = 1.6) {
+      I.noise(S, t, { type: 'highpass', f: 5200, q: 0.4, dur, v, attack: 0.002, rev: 0.5 });
+    },
+    whoosh(S, t, dur, v = 0.1) {
+      const { ctx } = S;
+      const src = ctx.createBufferSource(); src.buffer = S.eng.noise; src.loop = true;
+      const fl = ctx.createBiquadFilter(); fl.type = 'bandpass'; fl.Q.value = 2.2;
+      fl.frequency.setValueAtTime(350, t);
+      fl.frequency.exponentialRampToValueAtTime(2800, t + dur * 0.45);
+      fl.frequency.exponentialRampToValueAtTime(600, t + dur);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(v, t + dur * 0.45);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.connect(fl); fl.connect(g);
+      if (ctx.createStereoPanner) {
+        const p = ctx.createStereoPanner();
+        p.pan.setValueAtTime(-0.7, t); p.pan.linearRampToValueAtTime(0.7, t + dur);
+        g.connect(p); route(S, p, { rev: 0.3 });
+      } else {
+        route(S, g, { rev: 0.3 });
+      }
+      src.start(t); src.stop(t + dur + 0.05);
+    },
+    // Two quick clicks, like a camera shutter, for the aperture locking.
+    shutter(S, t, v = 0.22) {
+      const { ctx } = S;
+      [0, 0.032].forEach((dt, i) => {
+        const o = ctx.createOscillator(); o.type = 'square';
+        o.frequency.setValueAtTime(i ? 2400 : 3200, t + dt);
+        o.frequency.exponentialRampToValueAtTime(1600, t + dt + 0.03);
+        const fl = ctx.createBiquadFilter(); fl.type = 'bandpass'; fl.frequency.value = 2600; fl.Q.value = 3;
+        const g = ctx.createGain(); hit(g, t + dt, v * (i ? 0.7 : 1), 0.001, 0.04);
+        o.connect(fl); fl.connect(g); route(S, g, { rev: 0.2 });
+        o.start(t + dt); o.stop(t + dt + 0.06);
+        I.noise(S, t + dt, { type: 'highpass', f: 6000, dur: 0.02, v: v * 0.5 });
+      });
+    },
+  };
+
+  // The score. Beat = 0.5 s; downbeats at 1.0 (plus), 3.0 (merge), 5.0 (tagline).
+  function score(S, T) {
+    const at = (x) => T + x;
+    const Dm9 = [50, 53, 57, 60, 64];
+    const Bbmaj9 = [46, 50, 53, 57, 60];
+    const Cadd9 = [48, 52, 55, 62];
+    const Fmaj9 = [53, 57, 60, 64, 67];
+
+    // Pickup: the two words arrive.
+    I.pad(S, at(0), Dm9, 0.9, { v: 0.035, attack: 0.9, release: 0.6, cutoff: 900 });
+    I.pluck(S, at(0.0), 69, { pan: -0.35 });                 // pharma
+    I.pluck(S, at(0.5), 72, { pan: 0.35 });                  // vision
+    I.hat(S, at(0.75), 0.05);
+
+    // Bar 1: the plus, the circles light up, then the build under the swirl.
+    I.pad(S, at(1.0), Bbmaj9, 0.9, { v: 0.032, attack: 0.15, release: 0.5 });
+    I.pad(S, at(2.0), Cadd9, 0.95, { v: 0.05, attack: 0.9, release: 0.2, cutoff: 2400 });   // swells into the drop
+    I.kick(S, at(1.0), 0.6); I.kick(S, at(1.5), 0.5);
+    I.clap(S, at(1.5), 0.22);
+    I.hat(S, at(1.25), 0.06, true); I.hat(S, at(1.75), 0.06, true);
+    I.bass(S, at(1.0), 34, 0.42, 0.18); I.bass(S, at(1.5), 34, 0.42, 0.18);
+    [2.0, 2.25, 2.5, 2.75].forEach((x, i) => I.bass(S, at(x), 36, 0.2, 0.1 + 0.04 * i));
+    I.pluck(S, at(1.0), 74, { v: 0.12 });                     // the plus
+    I.bell(S, at(1.5), 77, { pan: -0.4, v: 0.1 });            // two circles light up
+    I.bell(S, at(1.5), 84, { pan: 0.4, v: 0.08 });
+    I.riser(S, at(2.0), at(2.96));
+    const roll = [2.0, 2.25, 2.5, 2.625, 2.75, 2.8125, 2.875, 2.9375];
+    roll.forEach((x, i) => I.snare(S, at(x), 0.07 + 0.28 * i / (roll.length - 1), 1 + 0.25 * i / roll.length));
+
+    // Bar 2: the drop as the circles merge; the mark twists and locks on beat 3.
+    I.kick(S, at(3.0), 1.1); I.boom(S, at(3.0), 38, 0.7); I.crash(S, at(3.0), 0.16);
+    I.pad(S, at(3.0), Dm9, 0.95, { v: 0.058, attack: 0.02, release: 0.4, cutoff: 2600 });
+    I.pad(S, at(4.0), Bbmaj9, 0.95, { v: 0.055, attack: 0.05, release: 0.4, cutoff: 2600 });
+    [62, 65, 69, 72].forEach((n) => I.pluck(S, at(3.0), n, { v: 0.07, dly: 0.4 }));
+    [3.5, 4.0, 4.5].forEach((x) => I.kick(S, at(x), 0.95));
+    [3.5, 4.5].forEach((x) => I.clap(S, at(x), 0.42));
+    for (let i = 0; i < 16; i++) I.hat(S, at(3.0 + i * 0.125), i % 2 ? 0.1 : 0.045, i % 4 === 2);
+    [3.25, 3.75].forEach((x) => I.bass(S, at(x), 38, 0.2, 0.36));
+    [4.25, 4.75].forEach((x) => I.bass(S, at(x), 34, 0.2, 0.36));
+    I.whoosh(S, at(3.0), 0.95);
+    I.shutter(S, at(T_FORM));
+    I.bell(S, at(T_FORM), 86, { v: 0.1 });
+    // Wordmark wipe: an arpeggio climbing left to right.
+    [70, 74, 77, 81, 82, 86, 89, 93].forEach((n, i) =>
+      I.pluck(S, at(4.0 + i * 0.125), n, { v: 0.065, pan: -0.6 + 1.2 * i / 7, decay: 0.3, dly: 0.25 }));
+
+    // Bar 3: the tagline lands on F major; three bells for "find the deviation".
+    I.kick(S, at(5.0), 0.95); I.boom(S, at(5.0), 41, 0.5, 1.8); I.crash(S, at(5.0), 0.12, 2.2);
+    I.pad(S, at(5.0), Fmaj9, 1.4, { v: 0.055, attack: 0.03, release: 2.2, cutoff: 2600 });
+    I.bass(S, at(5.0), 41, 1.2, 0.28);
+    [[5.0, 81, -0.3, 1.4], [5.25, 84, 0.3, 1.4], [5.5, 88, 0, 2.6]].forEach(([x, n, pan, dur]) =>
+      I.bell(S, at(x), n, { v: 0.12, pan, dur }));
+  }
+
+  // ---- playback ------------------------------------------------------------
+  let raf = 0, startAt = 0, running = false;
+  let engine = null, session = null, soundOn = false;
+
+  function tick(now) {
+    const t = (now - startAt) / 1000;
+    render(Math.max(0, Math.min(t, T_END)));
+    if (t < T_END) raf = requestAnimationFrame(tick);
+    else { running = false; hold(); }
+  }
+
+  // ---- holding on the logo, then handing over to the app ------------------
+  let ended = false;
+  function hold() {
+    ended = true;
+    document.body.classList.add('ended');
+  }
+  function enter() {
+    if (!ended) return;
+    if (window.parent !== window) window.parent.postMessage({ type: 'phision-intro-done' }, location.origin);
+  }
+
+  function play() {
+    ended = false;
+    document.body.classList.remove('ended');
+    cancelAnimationFrame(raf);
+    if (session) { session.close(); session = null; }
+    let lead = 0;
+    if (soundOn && engine) {
+      const ctx = engine.ctx;
+      if (ctx.state !== 'running') {
+        ctx.resume().then(play, () => { soundOn = false; play(); });
+        return;
+      }
+      lead = 0.12;
+      session = openSession(engine);
+      score(session, ctx.currentTime + lead);
+      lead += ctx.outputLatency || ctx.baseLatency || 0;
+    }
+    running = true;
+    startAt = performance.now() + lead * 1000;
+    raf = requestAnimationFrame(tick);
+  }
+
+  function toggleSound() {
+    if (!soundOn) {
+      // Browsers only allow audio after a key press or click, so the engine starts here.
+      if (!engine) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        engine = createEngine(new AC());
+      }
+      soundOn = true;
+      play();                       // start over so the music lines up
+    } else {
+      soundOn = false;
+      if (session) { session.close(); session = null; }
+    }
+  }
+
+  // No on-screen controls. R replays (with sound if it is on); S toggles sound.
+  document.addEventListener('keydown', (e) => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+    if (e.key === 'r' || e.key === 'R') play();
+    else if (e.key === 's' || e.key === 'S') toggleSound();
+    else enter();
+  });
+  document.addEventListener('pointerdown', enter);
+  window.addEventListener('resize', () => {
+    computeLayout();
+    if (!running) render(cur);
+  });
+
+  function start() {
+    measureFont();
+    computeLayout();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      render(T_END);
+      hold();
+    } else {
+      render(0);
+      setTimeout(play, 250);
+    }
+  }
+  computeLayout();
+  render(0);
+  const fontReady = document.fonts && document.fonts.load
+    ? document.fonts.load('700 100px "Urbanist"', 'Phision').catch(() => {})
+    : Promise.resolve();
+  Promise.race([fontReady, new Promise((r) => setTimeout(r, 1500))]).then(start);
+</script>
+</body>
+</html>
