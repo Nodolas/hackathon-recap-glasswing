@@ -1,0 +1,13 @@
+# Test Flight hackathon recap by Nicolas Peters Saa
+
+> Nicolas Peters Saa's recap of Test Flight, the Glasswing Ventures Enterprise-Ready AI Hackathon in Boston (September 26–27, 2026, Boston AI Week). His team built Phision, an AI agent that investigates pharmaceutical manufacturing deviations with cited evidence. They shipped a working product and did not place. Main lessons: bring your own idea, and come with your own team.
+
+## Pages
+
+- [Recap (HTML)](https://nodolas.github.io/hackathon-recap-glasswing/): the full page
+- [Recap (Markdown)](https://nodolas.github.io/hackathon-recap-glasswing/index.md): the same content as plain Markdown
+- [Phision demo](https://nodolas.github.io/hackathon-recap-glasswing/demo/): interactive JavaScript app running on fictional data; not readable without a browser
+
+## Optional
+
+- [Event page](https://aiweek.boston/schedule/glasswing-ventures-enterprise-ready-ai-hackathon): Boston AI Week listing for the hackathon
